@@ -14,7 +14,7 @@ ping_function() {
   Linux | Darwin)
     # storing the hostname/IP in the variable PINGSERVER, default is google.com
     pingserver=$(get_tmux_option "@monokai-ping-server" "google.com")
-    pingtime=$(ping -c 1 "$pingserver" | tail -1 | awk '{print $4}' | cut -d '/' -f 2)
+    pingtime=$(ping -c 1 "$pingserver" | tail -1 | awk '{printf "%.0f", $4}' | cut -d '/' -f 2)
     echo "$pingtime ms"
     ;;
 
