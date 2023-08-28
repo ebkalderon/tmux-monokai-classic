@@ -27,9 +27,9 @@ set -g @monokai-plugins "cpu-usage gpu-usage ram-usage"
 For each plugin is possible to customize background and foreground colors
 
 ```bash
-# available colors: white, gray, dark_gray, light_purple, dark_purple, cyan, green, orange, red, pink, yellow
+# available colors: white, gray, dark_gray, purple, cyan, green, orange, red, yellow
 # set -g @monokai-[plugin-name]-colors "[background] [foreground]"
-set -g @monokai-cpu-usage-colors "pink dark_gray"
+set -g @monokai-cpu-usage-colors "red dark_gray"
 ```
 
 #### Status bar options
@@ -75,12 +75,6 @@ Add padding to the left smiley icon
 ```bash
 # default is 1, it can accept any number and 0 disables padding.
 set -g @monokai-left-icon-padding 1
-```
-
-Enable high contrast pane border
-
-```bash
-set -g @monokai-border-contrast true
 ```
 
 Hide empty plugins

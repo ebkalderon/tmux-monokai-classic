@@ -16,36 +16,33 @@ main()
   show_fahrenheit=$(get_tmux_option "@monokai-show-fahrenheit" true)
   show_location=$(get_tmux_option "@monokai-show-location" true)
   fixed_location=$(get_tmux_option "@monokai-fixed-location")
-  show_powerline=$(get_tmux_option "@monokai-show-powerline" false)
+  show_powerline=$(get_tmux_option "@monokai-show-powerline" true)
   show_flags=$(get_tmux_option "@monokai-show-flags" false)
-  show_left_icon=$(get_tmux_option "@monokai-show-left-icon" smiley)
+  show_left_icon=$(get_tmux_option "@monokai-show-left-icon" session)
   show_left_icon_padding=$(get_tmux_option "@monokai-left-icon-padding" 1)
   show_military=$(get_tmux_option "@monokai-military-time" false)
   timezone=$(get_tmux_option "@monokai-set-timezone" "")
   show_timezone=$(get_tmux_option "@monokai-show-timezone" true)
   show_left_sep=$(get_tmux_option "@monokai-show-left-sep" )
   show_right_sep=$(get_tmux_option "@monokai-show-right-sep" )
-  show_border_contrast=$(get_tmux_option "@monokai-border-contrast" false)
   show_day_month=$(get_tmux_option "@monokai-day-month" false)
   show_refresh=$(get_tmux_option "@monokai-refresh-rate" 5)
   show_synchronize_panes_label=$(get_tmux_option "@monokai-synchronize-panes-label" "Sync")
   time_format=$(get_tmux_option "@monokai-time-format" "")
   show_ssh_session_port=$(get_tmux_option "@monokai-show-ssh-session-port" false)
-  IFS=' ' read -r -a plugins <<< $(get_tmux_option "@monokai-plugins" "battery network weather")
+  IFS=' ' read -r -a plugins <<< $(get_tmux_option "@monokai-plugins" "network-ping cpu-usage ram-usage")
   show_empty_plugins=$(get_tmux_option "@monokai-show-empty-plugins" true)
 
   # Monokai Color Pallette
   white='#f8f8f2'
-  gray='#44475a'
-  dark_gray='#282a36'
-  light_purple='#bd93f9'
-  dark_purple='#6272a4'
-  cyan='#8be9fd'
-  green='#50fa7b'
-  orange='#ffb86c'
-  red='#ff5555'
-  pink='#ff79c6'
-  yellow='#f1fa8c'
+  gray='#75715e'
+  dark_gray='#232323'
+  purple='#ae81ff'
+  cyan='#66D9EF'
+  green='#a6e22e'
+  orange='#fd971f'
+  red='#f92672'
+  yellow='#ffd866'
 
   # Handle left icon configuration
   case $show_left_icon in
@@ -91,8 +88,8 @@ main()
       flags=""
       current_flags="";;
     true)
-      flags="#{?window_flags,#[fg=${dark_purple}]#{window_flags},}"
-      current_flags="#{?window_flags,#[fg=${light_purple}]#{window_flags},}"
+      flags="#{?window_flags,#[fg=${purple},bold]#{window_flags},}"
+      current_flags="#{?window_flags,#[fg=${purple}]#{window_flags},}"
   esac
 
   # sets refresh interval to every 5 seconds
@@ -110,11 +107,7 @@ main()
   tmux set-option -g status-right-length 100
 
   # pane border styling
-  if $show_border_contrast; then
-    tmux set-option -g pane-active-border-style "fg=${light_purple}"
-  else
-    tmux set-option -g pane-active-border-style "fg=${dark_purple}"
-  fi
+  tmux set-option -g pane-active-border-style "fg=${green}"
   tmux set-option -g pane-border-style "fg=${gray}"
 
   # message styling
@@ -125,16 +118,17 @@ main()
 
   # Status left
   if $show_powerline; then
-    tmux set-option -g status-left "#[bg=${green},fg=${dark_gray}]#{?client_prefix,#[bg=${yellow}],} ${left_icon} #[fg=${green},bg=${gray}]#{?client_prefix,#[fg=${yellow}],}${left_sep}"
+    tmux set-option -g status-left "#[fg=${green},bg=${dark_gray},bold]#{?client_prefix,#[fg=${yellow}],}#[bg=${green},fg=${dark_gray}]#{?client_prefix,#[bg=${yellow}],} ${left_icon} #[fg=${green},bg=${gray}]#{?client_prefix,#[fg=${yellow}],}${left_sep}"
     powerbg=${gray}
   else
-    tmux set-option -g status-left "#[bg=${green},fg=${dark_gray}]#{?client_prefix,#[bg=${yellow}],} ${left_icon}"
+    tmux set-option -g status-left "#[bg=${green},fg=${dark_gray},bold]#{?client_prefix,#[bg=${yellow}],} ${left_icon}"
   fi
 
   # Status right
   tmux set-option -g status-right ""
 
-  for plugin in "${plugins[@]}"; do
+  for i in "${!plugins[@]}"; do
+    plugin="${plugins[$i]}"
 
     if case $plugin in custom:*) true;; *) false;; esac; then
       script=${plugin#"custom:"}
@@ -168,11 +162,11 @@ main()
       script="#($current_dir/hg.sh)"
 
     elif [ $plugin = "battery" ]; then
-      IFS=' ' read -r -a colors <<< $(get_tmux_option "@monokai-battery-colors" "pink dark_gray")
+      IFS=' ' read -r -a colors <<< $(get_tmux_option "@monokai-battery-colors" "red dark_gray")
       script="#($current_dir/battery.sh)"
 
     elif [ $plugin = "gpu-usage" ]; then
-      IFS=' ' read -r -a colors <<< $(get_tmux_option "@monokai-gpu-usage-colors" "pink dark_gray")
+      IFS=' ' read -r -a colors <<< $(get_tmux_option "@monokai-gpu-usage-colors" "red dark_gray")
       script="#($current_dir/gpu_usage.sh)"
 
     elif [ $plugin = "gpu-ram-usage" ]; then
@@ -188,11 +182,11 @@ main()
       script="#($current_dir/cpu_info.sh)"
 
     elif [ $plugin = "ram-usage" ]; then
-      IFS=' ' read -r -a colors <<< $(get_tmux_option "@monokai-ram-usage-colors" "cyan dark_gray")
+      IFS=' ' read -r -a colors <<< $(get_tmux_option "@monokai-ram-usage-colors" "yellow dark_gray")
       script="#($current_dir/ram_info.sh)"
 
     elif [ $plugin = "tmux-ram-usage" ]; then
-      IFS=' ' read -r -a colors <<< $(get_tmux_option "@monokai-tmux-ram-usage-colors" "cyan dark_gray")
+      IFS=' ' read -r -a colors <<< $(get_tmux_option "@monokai-tmux-ram-usage-colors" "yellow dark_gray")
       script="#($current_dir/tmux_ram_info.sh)"
 
     elif [ $plugin = "network" ]; then
@@ -205,7 +199,7 @@ main()
       script="#($current_dir/network_bandwidth.sh)"
 
     elif [ $plugin = "network-ping" ]; then
-      IFS=' ' read -r -a colors <<<$(get_tmux_option "@monokai-network-ping-colors" "cyan dark_gray")
+      IFS=' ' read -r -a colors <<<$(get_tmux_option "@monokai-network-ping-colors" "gray white")
       script="#($current_dir/network_ping.sh)"
 
     elif [ $plugin = "network-vpn" ]; then
@@ -229,7 +223,7 @@ main()
       script="#($current_dir/kubernetes_context.sh $eks_hide_arn $eks_extract_account $hide_kubernetes_user $show_kubernetes_context_label)"
 
     elif [ $plugin = "terraform" ]; then
-      IFS=' ' read -r -a colors <<<$(get_tmux_option "@monokai-terraform-colors" "light_purple dark_gray")
+      IFS=' ' read -r -a colors <<<$(get_tmux_option "@monokai-terraform-colors" "purple dark_gray")
       script="#($current_dir/terraform.sh $terraform_label)"
 
     elif [ $plugin = "continuum" ]; then
@@ -241,7 +235,7 @@ main()
       script="#($current_dir/weather_wrapper.sh $show_fahrenheit $show_location '$fixed_location')"
 
     elif [ $plugin = "time" ]; then
-      IFS=' ' read -r -a colors <<< $(get_tmux_option "@monokai-time-colors" "dark_purple white")
+      IFS=' ' read -r -a colors <<< $(get_tmux_option "@monokai-time-colors" "cyan dark_gray")
       if [ -n "$time_format" ]; then
         script=${time_format}
       else
@@ -281,16 +275,25 @@ main()
         tmux set-option -ga status-right "#{?#{==:$script,},,#[fg=${!colors[1]},bg=${!colors[0]}] $script }"
       fi
     fi
+
+    # Display hostname at status-right
+    if [[ $((i + 1)) == "${#plugins[@]}" ]]; then
+      if $show_powerline; then
+        tmux set-option -ga status-right "#[fg=${green},bg=${!colors[0]}]${right_sep}#[bg=${green},fg=${dark_gray},bold] #h #[bg=${dark_gray},fg=${green}]"
+      else
+        tmux set-option -ga status-right "#[fg=${green},bg=${cyan}]${right_sep}#[bg=${green},fg=${dark_gray},bold] #h "
+      fi
+    fi
   done
 
   # Window option
   if $show_powerline; then
-    tmux set-window-option -g window-status-current-format "#[fg=${gray},bg=${dark_purple}]${left_sep}#[fg=${white},bg=${dark_purple}] #I #W${current_flags} #[fg=${dark_purple},bg=${gray}]${left_sep}"
+    tmux set-window-option -g window-status-current-format "#[fg=${gray},bg=${white}]${left_sep}#[fg=${dark_gray},bg=${white}] #I #W${current_flags} #[fg=${white},bg=${gray}]${left_sep}"
   else
-    tmux set-window-option -g window-status-current-format "#[fg=${white},bg=${dark_purple}] #I #W${current_flags} "
+    tmux set-window-option -g window-status-current-format "#[fg=${gray},bg=${white}] #I #W${current_flags} "
   fi
 
-  tmux set-window-option -g window-status-format "#[fg=${white}]#[bg=${gray}] #I #W${flags}"
+  tmux set-window-option -g window-status-format "#[bg=${gray},fg=${gray}]${left_sep} #[fg=${white},bg=${gray}]#I #W${flags} #[bg=${gray},fg=${gray}]${left_sep}"
   tmux set-window-option -g window-status-activity-style "bold"
   tmux set-window-option -g window-status-bell-style "bold"
 }
