@@ -3,13 +3,13 @@
 export LC_ALL=en_US.UTF-8
 
 # configuration
-# @dracula-continuum-mode default (countdown|time|alert|interval)
-# @dracula-continuum-time-threshold 15
+# @monokai-continuum-mode default (countdown|time|alert|interval)
+# @monokai-continuum-time-threshold 15
 
-alert_mode="@dracula-continuum-mode"
-time_threshold="@dracula-continuum-time-threshold"
+alert_mode="@monokai-continuum-mode"
+time_threshold="@monokai-continuum-time-threshold"
 warn_threshold=360
-first_save="@dracula-continuum-first-save"
+first_save="@monokai-continuum-first-save"
 
 # tmux-resurrect and tmux-continuum options
 if [ -d "$HOME/.tmux/resurrect" ]; then

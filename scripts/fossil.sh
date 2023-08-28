@@ -3,12 +3,12 @@
 current_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $current_dir/utils.sh
 
-IFS=' ' read -r -a hide_status <<< $(get_tmux_option "@dracula-fossil-disable-status" "false")
-IFS=' ' read -r -a current_symbol <<< $(get_tmux_option "@dracula-fossil-show-current-symbol" "✓")
-IFS=' ' read -r -a diff_symbol <<< $(get_tmux_option "@dracula-fossil-show-diff-symbol" "!")
-IFS=' ' read -r -a no_repo_message <<< $(get_tmux_option "@dracula-fossil-no-repo-message" "")
-IFS=' ' read -r -a no_untracked_files <<< $(get_tmux_option "@dracula-fossil-no-untracked-files" "false")
-IFS=' ' read -r -a show_remote_status <<< $(get_tmux_option "@dracula-fossil-show-remote-status" "false")
+IFS=' ' read -r -a hide_status <<< $(get_tmux_option "@monokai-fossil-disable-status" "false")
+IFS=' ' read -r -a current_symbol <<< $(get_tmux_option "@monokai-fossil-show-current-symbol" "✓")
+IFS=' ' read -r -a diff_symbol <<< $(get_tmux_option "@monokai-fossil-show-diff-symbol" "!")
+IFS=' ' read -r -a no_repo_message <<< $(get_tmux_option "@monokai-fossil-no-repo-message" "")
+IFS=' ' read -r -a no_untracked_files <<< $(get_tmux_option "@monokai-fossil-no-untracked-files" "false")
+IFS=' ' read -r -a show_remote_status <<< $(get_tmux_option "@monokai-fossil-show-remote-status" "false")
 
 # Get added, modified, updated and deleted files from git status
 getChanges()
@@ -21,15 +21,15 @@ getChanges()
 for i in $(cd $path; fossil changes --differ|cut -f1 -d' ')
 
     do
-      case $i in 
+      case $i in
       'EXTRA')
-        added+=1 
+        added+=1
       ;;
       'EDITED')
         modified+=1
       ;;
       'U')
-        updated+=1 
+        updated+=1
       ;;
       'DELETED')
        deleted+=1
@@ -43,12 +43,12 @@ for i in $(cd $path; fossil changes --differ|cut -f1 -d' ')
     [ $modified -gt 0 ] && output+=" ${modified}M"
     [ $updated -gt 0 ] && output+=" ${updated}U"
     [ $deleted -gt 0 ] && output+=" ${deleted}D"
-  
-    echo $output    
+
+    echo $output
 }
 
 
-# getting the #{pane_current_path} from dracula.sh is no longer possible
+# getting the #{pane_current_path} from monokai.sh is no longer possible
 getPaneDir()
 {
  nextone="false"
@@ -57,7 +57,7 @@ getPaneDir()
     if [ "$nextone" == "true" ]; then
        echo $i
        return
-    fi 
+    fi
     if [ "$i" == "1" ]; then
         nextone="true"
     fi
@@ -68,7 +68,7 @@ getPaneDir()
 # check if the current or diff symbol is empty to remove ugly padding
 checkEmptySymbol()
 {
-    symbol=$1    
+    symbol=$1
     if [ "$symbol" == "" ]; then
         echo "true"
     else
@@ -88,7 +88,7 @@ checkForChanges()
     else
         echo "false"
     fi
-}     
+}
 
 # check if a git repo exists in the directory
 checkForFossilDir()
@@ -102,7 +102,7 @@ checkForFossilDir()
 
 # return branch name if there is one
 getBranch()
-{   
+{
     if [ $(checkForFossilDir) == "true" ]; then
         echo $(cd $path; fossil branch current)
     else
@@ -135,10 +135,10 @@ getMessage()
         branch="$(getBranch)"
         output=""
 
-        if [ $(checkForChanges) == "true" ]; then 
-            
-            changes="$(getChanges)" 
-            
+        if [ $(checkForChanges) == "true" ]; then
+
+            changes="$(getChanges)"
+
             if [ "${hide_status}" == "false" ]; then
                 if [ $(checkEmptySymbol $diff_symbol) == "true" ]; then
 		     output=$(echo "${changes} $branch")
@@ -169,10 +169,10 @@ getMessage()
 }
 
 main()
-{  
+{
     path=$(getPaneDir)
     getMessage
 }
 
 #run main driver program
-main 
+main
